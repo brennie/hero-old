@@ -1,6 +1,7 @@
 module Hero.Game where
 
-
+import Data.Array.IArray((!))
+import Control.Monad(when)
 import UI.NCurses
 
 import Hero.Map
@@ -17,7 +18,7 @@ runGame = do case m of
                                          gameLoop w m' (1, 1)
   where
     m = readMap . unlines $ ["################################"
-                            ,"#....###..##....##.....###..#..#"
+                            ,"#....###..##....##..v..###..#..#"
                             ,"#...............##..#..###..#..#"
                             ,"#....###..##....##.....###....##"
                             ,"#....###..##....##.........##.##"
@@ -32,8 +33,27 @@ gameLoop :: Window -> Map -> Point -> Curses ()
 gameLoop w m p = do updateWindow w $ do displayMap m
                                         uncurry moveCursor $ p
                                         drawString "@"
+                    
                     render
+
                     c <- nextChar w
-                    case c of
-                      'q' -> return ()
-                      _   -> gameLoop w m p
+
+                    when (c /= 'q') $ do
+                      case readDirection c of
+                        Nothing -> gameLoop w m p
+                        Just d  -> do let tile = m ! p'
+                                      if tile == StairsDown then win
+                                      else gameLoop w m p'
+                          where
+                            moved = move p d
+                            p' = if walkable $ m ! moved then moved else p
+  where
+    win :: Curses ()
+    win = do updateWindow w $ do moveCursor 10 0
+                                 drawString "You have won! Press any key to continue . . ."
+
+             render
+
+             _ <- nextChar w
+             
+             return ()

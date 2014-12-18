@@ -1,6 +1,7 @@
 module Hero.Map where
 
 
+import Data.Char(toLower)
 import Data.Array.IArray(Array, listArray)
 
 
@@ -77,3 +78,26 @@ readMap s
       -- | Sequence a list of lists.
       sequence2 :: (Monad m) => [[m a]] -> m [[a]]
       sequence2 = sequence . map sequence
+
+
+-- | A cardinal direction.
+data Direction = North | South | East | West
+
+
+-- | Try to interpret a Char as a direction, using the WASD mapping.
+readDirection :: Char -> Maybe Direction
+readDirection = go . toLower
+  where
+    go 'w' = Just North
+    go 'a' = Just West
+    go 's' = Just South
+    go 'd' = Just East
+    go  _  = Nothing
+
+
+-- | Move from a point in a given direction.
+move :: Point -> Direction -> Point
+move (y, x) North = (y - 1, x)
+move (y, x) South = (y + 1, x)
+move (y, x) East  = (y, x + 1)
+move (y, x) West  = (y, x - 1)
