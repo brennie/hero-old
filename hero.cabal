@@ -1,7 +1,7 @@
 name:                hero
 version:             0.0.0.1
 synopsis:            A Haskell roguelike
-description:        A Haskell roguelike 
+description:         A Haskell roguelike 
 homepage:            https://github.com/brennie/hero
 license:             GPL-3
 license-file:        LICENSE
