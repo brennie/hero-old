@@ -1,0 +1,19 @@
+name:                hero
+version:             0.0.0.1
+synopsis:            A Haskell roguelike
+description:        A Haskell roguelike 
+homepage:            https://github.com/brennie/hero
+license:             GPL-3
+license-file:        LICENSE
+author:              Barret Rennie
+maintainer:          barret@brennie.ca
+copyright:           (C) 2014, Barret Rennie
+category:            Game
+build-type:          Simple
+extra-source-files:  README.md
+cabal-version:       >=1.10
+
+executable hero
+  main-is:             Main.hs
+  build-depends:       base >=4.6 && <4.7
+  default-language:    Haskell2010
