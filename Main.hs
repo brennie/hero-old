@@ -1,5 +1,8 @@
 module Main where
 
 
+import Hero.Game(runGame)
+
+
 main :: IO ()
-main = return ()
+main = runGame
