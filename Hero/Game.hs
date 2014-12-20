@@ -4,18 +4,22 @@ import Data.Array.IArray((!))
 import Control.Monad(when)
 import UI.NCurses
 
+import Hero.Character
 import Hero.Map
 import Hero.UI(displayMap, nextChar)
 
 
+data GameState = GameState { level :: Map, char :: Character }
+
+
 -- | Initialize the UI and start the game.
-runGame :: IO ()
-runGame = do case m of
-               Nothing -> putStrLn "Could not load map"
-               Just m' -> runCurses $ do setEcho False
-                                         setCursorMode CursorInvisible
-                                         w <- defaultWindow
-                                         gameLoop w m' (1, 1)
+runGame :: String ->  IO ()
+runGame n = do case m of
+                 Nothing -> putStrLn "Could not load map"
+                 Just m' -> runCurses $ do setEcho False
+                                           setCursorMode CursorInvisible
+                                           w <- defaultWindow
+                                           gameLoop w (GameState m' (Character n (1, 1) 2))
   where
     m = readMap . unlines $ ["################################"
                             ,"#....###..##....##..v..###..#..#"
@@ -29,24 +33,25 @@ runGame = do case m of
 
 
 -- | Run the game loop.
-gameLoop :: Window -> Map -> Point -> Curses ()
-gameLoop w m p = do updateWindow w $ do displayMap m
-                                        uncurry moveCursor $ p
-                                        drawString "@"
-                    
-                    render
+gameLoop :: Window -> GameState -> Curses ()
+gameLoop w st = do updateWindow w $ do displayMap . level $ st
+                                       uncurry moveCursor . position . char $ st
+                                       drawString "@"
+                        
+                   render
 
-                    c <- nextChar w
+                   c <- nextChar w
 
-                    when (c /= 'q') $ do
-                      case readDirection c of
-                        Nothing -> gameLoop w m p
-                        Just d  -> do let tile = m ! p'
-                                      if tile == StairsDown then win
-                                      else gameLoop w m p'
-                          where
-                            moved = move p d
-                            p' = if walkable $ m ! moved then moved else p
+                   when (c /= 'q') $ do
+                     case readDirection c of
+                       Nothing -> gameLoop w st
+                       Just d  -> gameLoop w st'
+                         where
+                           p' = move (position . char $ st) d
+                           st' = if walkable $ (level st) ! p' then st { char = (char st) { position = p' } }
+                                                               else st
+
+                           
   where
     win :: Curses ()
     win = do updateWindow w $ do moveCursor 10 0

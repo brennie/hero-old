@@ -13,9 +13,9 @@ data Tile = Floor | Wall | StairsDown deriving Eq
 --
 -- We do not convert to Char because NCurses only handles drawing strings.
 instance Show Tile where
-	show Floor      = "."
-	show Wall       = "#"
-	show StairsDown = "v"
+    show Floor      = "."
+    show Wall       = "#"
+    show StairsDown = "v"
 
 
 -- | Determine if a character can step on a Tile.
@@ -55,11 +55,11 @@ type Map = Array Point Tile
 -- then the interpretation of the entire string fails.
 readMap :: String -> Maybe Map
 readMap s
-	| null rows       = Nothing -- We do not want an empty Map.
-	| w * h == 0      = Nothing -- Same as above.
-	| not isRectangle = Nothing -- The resulting array must not be jagged.
-	| otherwise       = do tiles <- sequence2 . (map . map) readTile $ rows
-	                       return . listArray dimensions . concat $ tiles
+    | null rows       = Nothing -- We do not want an empty Map.
+    | w * h == 0      = Nothing -- Same as above.
+    | not isRectangle = Nothing -- The resulting array must not be jagged.
+    | otherwise       = do tiles <- sequence2 . (map . map) readTile $ rows
+                           return . listArray dimensions . concat $ tiles
     where
       rows = lines s
 
